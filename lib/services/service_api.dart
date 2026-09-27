@@ -21,6 +21,7 @@ class ServiceApi {
       category: 'Puja',
       rating: 4.9,
       reviewCount: 428,
+      languages: <String>['Hindi', 'Sanskrit', 'Telugu'],
     ),
     ServiceModel(
       id: 'srv_griha_pravesh',
@@ -32,6 +33,7 @@ class ServiceApi {
       category: 'Puja',
       rating: 4.8,
       reviewCount: 261,
+      languages: <String>['Hindi', 'Kannada', 'English'],
     ),
     ServiceModel(
       id: 'srv_havan',
@@ -43,6 +45,7 @@ class ServiceApi {
       category: 'Havan',
       rating: 4.8,
       reviewCount: 189,
+      languages: <String>['Sanskrit', 'Hindi'],
     ),
     ServiceModel(
       id: 'srv_kundali',
@@ -54,6 +57,7 @@ class ServiceApi {
       category: 'Astrology',
       rating: 4.9,
       reviewCount: 512,
+      languages: <String>['Hindi', 'English'],
     ),
   ];
 
@@ -61,9 +65,11 @@ class ServiceApi {
     ServiceModel(id: 'cat_puja', title: 'Puja', subtitle: '12 services', icon: 'temple'),
     ServiceModel(id: 'cat_homam', title: 'Homam', subtitle: '8 services', icon: 'fire'),
     ServiceModel(id: 'cat_wedding', title: 'Wedding', subtitle: '6 services', icon: 'rings'),
-    ServiceModel(id: 'cat_havan', title: 'Havan', subtitle: '7 services', icon: 'flame'),
-    ServiceModel(id: 'cat_satyanarayan', title: 'Satyanarayan', subtitle: '4 services', icon: 'book'),
     ServiceModel(id: 'cat_griha', title: 'Griha Pravesh', subtitle: '5 services', icon: 'home'),
+    ServiceModel(id: 'cat_astrology', title: 'Astrology', subtitle: '9 services', icon: 'stars'),
+    ServiceModel(id: 'cat_vastu', title: 'Vastu', subtitle: '4 services', icon: 'compass'),
+    ServiceModel(id: 'cat_festivals', title: 'Festivals', subtitle: '7 services', icon: 'festival'),
+    ServiceModel(id: 'cat_all', title: 'All Services', subtitle: '48 services', icon: 'grid'),
   ];
 
   Future<List<ServiceModel>> featured() async {

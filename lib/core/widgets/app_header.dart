@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import 'brand_logo.dart';
 
-/// Mobile adaptation of the website header: hamburger, centred brand lockup
-/// and a trailing action slot (notification bell on Home).
+/// Mobile header: hamburger, centred brand lockup and a trailing action
+/// slot (notification bell on Home). Navy by default to match the
+/// reference design's chrome.
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   const AppHeader({
     super.key,
@@ -28,9 +29,10 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool dark = background != null;
+    final Color bg = background ?? AppColors.navy;
+    final bool dark = bg != AppColors.surface && bg != AppColors.cream;
     return Material(
-      color: background ?? AppColors.cream,
+      color: bg,
       child: SafeArea(
         bottom: false,
         child: SizedBox(

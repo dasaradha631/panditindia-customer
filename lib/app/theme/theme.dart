@@ -11,18 +11,21 @@ class AppTheme {
   static const String displayFamily = 'Marcellus';
   static const String bodyFamily = 'Poppins';
 
+  /// Status bar over navy chrome (headers, auth heroes, drawers).
   static const SystemUiOverlayStyle darkStatus = SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
     statusBarBrightness: Brightness.dark,
-    systemNavigationBarColor: AppColors.navy,
-    systemNavigationBarIconBrightness: Brightness.light,
+    systemNavigationBarColor: AppColors.cream,
+    systemNavigationBarIconBrightness: Brightness.dark,
   );
 
+  /// Default status style: the app bar is navy, the system nav bar sits on
+  /// the white content pages.
   static const SystemUiOverlayStyle lightStatus = SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-    statusBarBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
     systemNavigationBarColor: AppColors.cream,
     systemNavigationBarIconBrightness: Brightness.dark,
   );
@@ -114,17 +117,17 @@ class AppTheme {
     return base.copyWith(
       textTheme: _textTheme(Brightness.light),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.cream,
+        backgroundColor: AppColors.navy,
         surfaceTintColor: Colors.transparent,
-        foregroundColor: AppColors.ink,
+        foregroundColor: AppColors.onDark,
         elevation: 0,
         centerTitle: true,
-        systemOverlayStyle: lightStatus,
+        systemOverlayStyle: darkStatus,
         titleTextStyle: TextStyle(
           fontFamily: bodyFamily,
           fontSize: 17,
           fontWeight: FontWeight.w600,
-          color: AppColors.ink,
+          color: AppColors.onDark,
         ),
       ),
       dividerTheme: const DividerThemeData(

@@ -83,15 +83,18 @@ class AppStrings {
 
   // Home & navigation
   static const String greetingPrefix = 'Namaste, ';
-  static const String homeLocation = 'Hyderabad, Telangana';
+  static const String homeLocation = 'Bengaluru, Karnataka';
+  static const String searchHint = 'Search pujas, pandits, ceremonies';
   static const String upcomingBookings = 'Upcoming Bookings';
   static const String noUpcomingTitle = 'No upcoming bookings';
   static const String noUpcomingSubtitle =
       'Your scheduled poojas will appear here.';
   static const String bookPujaNow = 'Book Puja Now';
+  static const String bookNow = 'Book Now';
   static const String viewDetails = 'View Details';
   static const String serviceCategories = 'Service Categories';
   static const String featuredServices = 'Featured Services';
+  static const String popularServices = 'Popular Services';
   static const String featuredPandits = 'Featured Pandits';
   static const String promotions = 'Offers & Promotions';
   static const String bookAgain = 'Book Again';
@@ -117,7 +120,6 @@ class AppStrings {
   static const String menuSettings = 'Settings';
   static const String menuLogout = 'Logout';
   static const String menuSignIn = 'Sign In / Register';
-
   // Bottom navigation
   static const String tabHome = 'Home';
   static const String tabServices = 'Services';

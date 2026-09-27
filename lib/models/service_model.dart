@@ -11,6 +11,7 @@ class ServiceModel {
     this.rating = 4.8,
     this.reviewCount = 0,
     this.imageAsset,
+    this.languages = const <String>['Hindi', 'English'],
   });
 
   final String id;
@@ -23,10 +24,13 @@ class ServiceModel {
   final double rating;
   final int reviewCount;
   final String? imageAsset;
+  final List<String> languages;
 
   String get priceLabel => priceFrom == null
       ? 'On request'
       : 'From ₹${priceFrom!.toStringAsFixed(0)}';
+
+  String get languagesLabel => languages.join(' • ');
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) => ServiceModel(
         id: '${json['id'] ?? ''}',
@@ -39,6 +43,10 @@ class ServiceModel {
         rating: (json['rating'] as num?)?.toDouble() ?? 4.8,
         reviewCount: (json['review_count'] as num?)?.toInt() ?? 0,
         imageAsset: json['image_asset'] as String?,
+        languages: (json['languages'] as List<dynamic>?)
+                ?.map((dynamic language) => '$language')
+                .toList() ??
+            const <String>['Hindi', 'English'],
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -52,5 +60,6 @@ class ServiceModel {
         'rating': rating,
         'review_count': reviewCount,
         'image_asset': imageAsset,
+        'languages': languages,
       };
 }

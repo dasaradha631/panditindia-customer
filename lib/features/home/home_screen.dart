@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
           trailing: HeaderIconButton(
             icon: Icons.notifications_none_rounded,
             badge: true,
+            dark: true,
             onTap: () => context.go('/notifications'),
           ),
         ),
@@ -83,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedIndex: tab,
           onDestinationSelected: _goTab,
           backgroundColor: AppColors.surface,
+          surfaceTintColor: Colors.transparent,
           indicatorColor: AppColors.primarySoft,
           height: 66,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,

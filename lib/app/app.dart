@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,6 +26,39 @@ class _PanditIndiaAppState extends State<PanditIndiaApp> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       routerConfig: _router,
+      builder: (context, child) {
+        if (child == null) return const SizedBox.shrink();
+        if (!kIsWeb) return child;
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 500) {
+              return Container(
+                color: const Color(0xFF181113), // Dark background for web desktop view
+                child: Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black38,
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: child,
+                  ),
+                ),
+              );
+            }
+            return child;
+          },
+        );
+      },
     );
   }
 }

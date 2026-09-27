@@ -3,9 +3,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/widgets/brand_logo.dart';
 import '../../../services/session_service.dart';
 
-/// Navigation drawer (PDF section 13 - hamburger drawer destinations).
+/// Side menu matching the reference design board: navy panel, brand + close
+/// header, reference destinations, Language and the orange "Book Puja Now"
+/// action (PDF section 13 - hamburger drawer destinations).
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
 
@@ -17,6 +20,11 @@ class HomeDrawer extends StatelessWidget {
       const SnackBar(content: Text(AppStrings.logoutSuccess)),
     );
     if (context.mounted) context.go('/welcome');
+  }
+
+  void _go(BuildContext context, String path) {
+    Navigator.of(context).pop();
+    context.go(path);
   }
 
   void _languageSheet(BuildContext context) {
@@ -49,7 +57,8 @@ class HomeDrawer extends StatelessWidget {
                 leading: const Icon(Icons.translate_rounded,
                     color: AppColors.primary),
                 title: const Text('English'),
-                trailing: const Icon(Icons.check_circle, color: AppColors.primary),
+                trailing:
+                    const Icon(Icons.check_circle, color: AppColors.primary),
                 onTap: () => Navigator.of(sheetContext).pop(),
               ),
               ListTile(
@@ -68,116 +77,34 @@ class HomeDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final String currentPath = GoRouterState.of(context).uri.path;
+
     return Drawer(
-      backgroundColor: AppColors.cream,
+      backgroundColor: AppColors.navy,
       child: SafeArea(
         child: Column(
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 26, 20, 22),
-              decoration: const BoxDecoration(
-                gradient: AppColors.brandGradient,
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(24),
-                ),
-              ),
-              child: FutureBuilder<Object?>(
-                future: SessionService.instance.user(),
-                builder: (BuildContext context, AsyncSnapshot<Object?> snap) {
-                  final dynamic user = snap.data;
-                  final String name =
-                      '${user?.fullName ?? 'Devotee'}';
-                  final String contact =
-                      '${user?.email ?? user?.mobile ?? 'Sign in to sync your bookings'}';
-                  final String initials = name
-                      .trim()
-                      .split(RegExp(r'\s+'))
-                      .map((String p) => p.isEmpty ? '' : p.substring(0, 1))
-                      .take(2)
-                      .join()
-                      .toUpperCase();
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            width: 58,
-                            height: 58,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppColors.onDark.withValues(alpha: 0.16),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.primary.withValues(alpha: 0.8),
-                                width: 2,
-                              ),
-                            ),
-                            child: Text(
-                              initials.isEmpty ? 'P' : initials,
-                              style: const TextStyle(
-                                fontFamily: 'Poppins',
-                                color: AppColors.onDark,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 19,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: AppColors.onDark,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  contact,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: AppColors.onDarkMuted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            context.go('/profile');
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.onDark,
-                            backgroundColor:
-                                AppColors.onDark.withValues(alpha: 0.12),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 8),
-                          ),
-                          icon: const Icon(Icons.person_outline_rounded,
-                              size: 17),
-                          label: const Text('View Profile'),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 14, 8, 10),
+              child: Row(
+                children: <Widget>[
+                  const BrandLockup(
+                    size: 38,
+                    onDark: true,
+                    showTagline: false,
+                    alignment: CrossAxisAlignment.center,
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    tooltip: 'Close',
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close_rounded,
+                        size: 26, color: AppColors.onDark),
+                  ),
+                ],
               ),
             ),
+            const Divider(color: AppColors.navySoft, thickness: 1),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -186,98 +113,81 @@ class HomeDrawer extends StatelessWidget {
                     icon: Icons.home_outlined,
                     activeIcon: Icons.home_rounded,
                     label: AppStrings.menuHome,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/home');
-                    },
+                    active: currentPath == '/home',
+                    onTap: () => _go(context, '/home'),
                   ),
                   _DrawerItem(
                     icon: Icons.grid_view_outlined,
+                    activeIcon: Icons.grid_view_rounded,
                     label: AppStrings.menuServices,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/services');
-                    },
+                    active: currentPath == '/services',
+                    onTap: () => _go(context, '/services'),
                   ),
                   _DrawerItem(
                     icon: Icons.face_outlined,
+                    activeIcon: Icons.face_rounded,
                     label: AppStrings.menuPandits,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/pandits');
-                    },
+                    active: currentPath == '/pandits',
+                    onTap: () => _go(context, '/pandits'),
                   ),
                   _DrawerItem(
                     icon: Icons.celebration_outlined,
+                    activeIcon: Icons.celebration_rounded,
                     label: AppStrings.menuEvents,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/events');
-                    },
+                    active: currentPath == '/events',
+                    onTap: () => _go(context, '/events'),
                   ),
                   _DrawerItem(
                     icon: Icons.photo_library_outlined,
+                    activeIcon: Icons.photo_library_rounded,
                     label: AppStrings.menuGallery,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/gallery');
-                    },
+                    active: currentPath == '/gallery',
+                    onTap: () => _go(context, '/gallery'),
                   ),
                   _DrawerItem(
                     icon: Icons.article_outlined,
+                    activeIcon: Icons.article_rounded,
                     label: AppStrings.menuBlogs,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/blogs');
-                    },
+                    active: currentPath == '/blogs',
+                    onTap: () => _go(context, '/blogs'),
                   ),
                   _DrawerItem(
                     icon: Icons.info_outline_rounded,
+                    activeIcon: Icons.info_rounded,
                     label: AppStrings.menuAbout,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/about');
-                    },
+                    active: currentPath == '/about',
+                    onTap: () => _go(context, '/about'),
                   ),
                   _DrawerItem(
                     icon: Icons.mail_outline_rounded,
+                    activeIcon: Icons.mail_rounded,
                     label: AppStrings.menuContact,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/contact');
-                    },
+                    active: currentPath == '/contact',
+                    onTap: () => _go(context, '/contact'),
                   ),
-                  const Divider(indent: 18, endIndent: 18),
-                  _DrawerItem(
-                    icon: Icons.event_note_outlined,
-                    label: AppStrings.menuBookings,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/bookings');
-                    },
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    child: Divider(color: AppColors.navySoft, thickness: 1),
                   ),
-                  _DrawerItem(
-                    icon: Icons.person_outline_rounded,
-                    label: AppStrings.menuProfile,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/profile');
-                    },
-                  ),
-                  _DrawerItem(
-                    icon: Icons.place_outlined,
-                    label: AppStrings.menuAddresses,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/addresses');
-                    },
-                  ),
-                  _DrawerItem(
-                    icon: Icons.support_agent_rounded,
-                    label: AppStrings.menuHelp,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go('/help');
+                  FutureBuilder<bool>(
+                    future: SessionService.instance.hasSession(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<bool> snapshot) {
+                      final bool signedIn = snapshot.data ?? false;
+                      if (signedIn) {
+                        return _DrawerItem(
+                          icon: Icons.logout_rounded,
+                          label: AppStrings.menuLogout,
+                          onTap: () => _logout(context),
+                        );
+                      }
+                      return _DrawerItem(
+                        icon: Icons.login_rounded,
+                        label: AppStrings.menuSignIn,
+                        active: currentPath == '/login' ||
+                            currentPath == '/register',
+                        onTap: () => _go(context, '/login'),
+                      );
                     },
                   ),
                   _DrawerItem(
@@ -289,14 +199,37 @@ class HomeDrawer extends StatelessWidget {
                       _languageSheet(context);
                     },
                   ),
-                  const Divider(indent: 18, endIndent: 18),
-                  _DrawerItem(
-                    icon: Icons.logout_rounded,
-                    label: AppStrings.menuLogout,
-                    destructive: true,
-                    onTap: () => _logout(context),
-                  ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _go(context, '/services'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.onDark,
+                    minimumSize: const Size.fromHeight(48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    textStyle: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.temple_buddhist_rounded, size: 19),
+                      SizedBox(width: 9),
+                      Text(AppStrings.bookPujaNow),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
@@ -313,7 +246,7 @@ class _DrawerItem extends StatelessWidget {
     required this.onTap,
     this.activeIcon,
     this.trailing,
-    this.destructive = false,
+    this.active = false,
   });
 
   final IconData icon;
@@ -321,28 +254,54 @@ class _DrawerItem extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final String? trailing;
-  final bool destructive;
+  final bool active;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(
-        icon,
-        size: 21,
-        color: destructive ? AppColors.error : AppColors.muted,
-      ),
-      title: Text(
-        label,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: destructive ? AppColors.error : AppColors.ink,
+    final Color foreground =
+        active ? AppColors.primary : AppColors.onDarkMuted;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      child: Material(
+        color: active
+            ? AppColors.primary.withValues(alpha: 0.14)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  active ? (activeIcon ?? icon) : icon,
+                  size: 21,
+                  color: foreground,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+                      color: foreground,
+                    ),
+                  ),
+                ),
+                if (trailing != null)
+                  Text(
+                    trailing!,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: AppColors.onDarkMuted,
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
-      trailing: trailing == null
-          ? null
-          : Text(trailing!, style: theme.textTheme.labelSmall),
-      onTap: onTap,
     );
   }
 }

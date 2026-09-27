@@ -5,8 +5,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/app_button.dart';
-import '../../../core/widgets/app_header.dart';
 import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/auth_scaffold.dart';
 import '../../../models/api_error.dart';
 import '../../../models/auth_models.dart';
 import '../../../services/auth_service.dart';
@@ -85,49 +85,32 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final OtpChallenge? challenge = widget.challenge;
-    final String destination =
-        challenge?.destination.isNotEmpty == true ? challenge!.destination : 'your registered number';
-
-    return Scaffold(
-      backgroundColor: AppColors.cream,
-      appBar: const AppHeader(showBack: true),
-      body: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Container(
-                width: 78,
-                height: 78,
-                margin: const EdgeInsets.only(top: 10, bottom: 18),
-                decoration: const BoxDecoration(
-                  color: AppColors.primarySoft,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.pin_rounded,
-                  size: 36,
-                  color: AppColors.primary,
-                ),
-              ),
-              Text(
-                AppStrings.resetTitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                AppStrings.resetSubtitle.replaceFirst('{destination}', destination),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(height: 1.55),
-              ),
-              const SizedBox(height: 24),
-              Container(
+    return AuthScaffold(
+      title: AppStrings.resetTitle,
+      subtitle: AppStrings.resetSubtitle.replaceFirst(
+        '{destination}',
+        widget.challenge?.destination.isNotEmpty == true
+            ? widget.challenge!.destination
+            : 'your registered number',
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            width: 78,
+            height: 78,
+            margin: const EdgeInsets.only(top: 4, bottom: 18),
+            decoration: const BoxDecoration(
+              color: AppColors.primarySoft,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.pin_rounded,
+              size: 36,
+              color: AppColors.primary,
+            ),
+          ),
+          Container(
                 padding: const EdgeInsets.fromLTRB(18, 22, 18, 22),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
@@ -197,9 +180,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 onPressed: () => context.go('/login'),
                 child: const Text('Back to Sign In'),
               ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }

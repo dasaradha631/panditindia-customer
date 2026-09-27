@@ -7,7 +7,6 @@ import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/widgets/brand_logo.dart';
-import '../../core/widgets/ornament_divider.dart';
 import '../../core/widgets/temple_scene.dart';
 import '../../services/session_service.dart';
 
@@ -26,8 +25,6 @@ class _SplashScreenState extends State<SplashScreen>
     duration: const Duration(milliseconds: 1400),
   )..forward();
 
-  int _activeDot = 0;
-
   @override
   void initState() {
     super.initState();
@@ -42,10 +39,10 @@ class _SplashScreenState extends State<SplashScreen>
       signedIn = false;
     }
 
+    // Reveal beats - timings are asserted by widget_test.
     for (int i = 0; i < 4; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 520));
       if (!mounted) return;
-      setState(() => _activeDot = i);
     }
 
     await Future<void>.delayed(const Duration(milliseconds: 350));
@@ -127,27 +124,14 @@ class _SplashScreenState extends State<SplashScreen>
                                   height: 1.32,
                                 ),
                           ),
-                          const SizedBox(height: 22),
-                          const OrnamentDivider(),
-                          const SizedBox(height: 26),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List<Widget>.generate(4, (int index) {
-                              final bool active = index == _activeDot;
-                              return AnimatedContainer(
-                                duration: const Duration(milliseconds: 320),
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                width: active ? 10 : 7,
-                                height: active ? 10 : 7,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: active
-                                      ? AppColors.primary
-                                      : AppColors.onDark.withValues(alpha: 0.35),
-                                ),
-                              );
-                            }),
+                          const SizedBox(height: 24),
+                          const SizedBox(
+                            width: 26,
+                            height: 26,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.4,
+                              color: AppColors.primary,
+                            ),
                           ),
                           const SizedBox(height: 18),
                           Text(

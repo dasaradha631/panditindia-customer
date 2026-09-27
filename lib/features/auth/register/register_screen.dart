@@ -6,9 +6,8 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/app_button.dart';
-import '../../../core/widgets/app_header.dart';
 import '../../../core/widgets/app_text_field.dart';
-import '../../../core/widgets/mandala_art.dart';
+import '../../../core/widgets/auth_scaffold.dart';
 import '../../../models/api_error.dart';
 import '../../../models/auth_models.dart';
 import '../../../services/auth_service.dart';
@@ -84,40 +83,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return Scaffold(
-      backgroundColor: AppColors.cream,
-      appBar: const AppHeader(showBack: true),
-      body: Stack(
+    return AuthScaffold(
+      title: AppStrings.registerTitle,
+      subtitle: AppStrings.registerSubtitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Transform.translate(
-              offset: const Offset(0, 70),
-              child: const MandalaArt(size: 320, opacity: 0.3),
-            ),
-          ),
-          SafeArea(
-            top: false,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 6, 20, 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Text(
-                    AppStrings.registerTitle,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppStrings.registerSubtitle,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall?.copyWith(height: 1.5),
-                  ),
-                  const SizedBox(height: 22),
-                  Container(
+          Container(
                     padding: const EdgeInsets.fromLTRB(18, 22, 18, 22),
                     decoration: BoxDecoration(
                       color: AppColors.surface,
@@ -273,10 +245,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
