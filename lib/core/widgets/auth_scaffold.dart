@@ -9,16 +9,24 @@ import 'brand_logo.dart';
 class AuthScaffold extends StatelessWidget {
   const AuthScaffold({
     super.key,
-    required this.title,
+    this.title,
+    this.titleWidget,
     required this.subtitle,
     required this.child,
     this.showBack = true,
-  });
+    this.showTagline = false,
+  }) : assert(title != null || titleWidget != null);
 
-  final String title;
+  /// Plain title text (ignored when [titleWidget] is provided).
+  final String? title;
+
+  /// Rich title slot, e.g. two-tone brand headings.
+  final Widget? titleWidget;
+
   final String subtitle;
   final Widget child;
   final bool showBack;
+  final bool showTagline;
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +55,12 @@ class AuthScaffold extends StatelessWidget {
                         )
                       else
                         const SizedBox(width: 48, height: 48),
-                      const Expanded(
+                      Expanded(
                         child: Center(
                           child: BrandLockup(
                             size: 34,
                             onDark: true,
-                            showTagline: false,
+                            showTagline: showTagline,
                           ),
                         ),
                       ),
@@ -60,14 +68,15 @@ class AuthScaffold extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      color: AppColors.onDark,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  titleWidget ??
+                      Text(
+                        title!,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: AppColors.onDark,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                   const SizedBox(height: 7),
                   Text(
                     subtitle,

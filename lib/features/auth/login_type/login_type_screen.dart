@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/widgets/app_button.dart';
-import '../../../core/widgets/app_header.dart';
+import '../../../core/widgets/auth_scaffold.dart';
 
 /// Login type selection (mockup screen 2 - choose Customer or Pandit).
 class LoginTypeScreen extends StatelessWidget {
@@ -21,129 +21,119 @@ class LoginTypeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return Scaffold(
-      backgroundColor: AppColors.cream,
-      appBar: const AppHeader(showBack: false),
-      body: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    return AuthScaffold(
+      showBack: true,
+      showTagline: true,
+      titleWidget: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: theme.textTheme.headlineMedium?.copyWith(
+            color: AppColors.onDark,
+            fontWeight: FontWeight.w700,
+          ),
+          children: <TextSpan>[
+            const TextSpan(text: AppStrings.welcomeTitle),
+            const TextSpan(
+              text: 'Pandit',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const TextSpan(
+              text: 'India',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      subtitle: AppStrings.welcomeSubtitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          _RoleCard(
+            selected: true,
+            icon: Icons.waving_hand_rounded,
+            iconColor: AppColors.primary,
+            iconBg: AppColors.primarySoft,
+            title: AppStrings.customerRoleTitle,
+            subtitle: AppStrings.customerRoleSubtitle,
+            onTap: () => context.go('/login'),
+          ),
+          const SizedBox(height: 14),
+          _RoleCard(
+            selected: false,
+            icon: Icons.self_improvement_rounded,
+            iconColor: AppColors.maroon,
+            iconBg: AppColors.surfaceMuted,
+            title: AppStrings.panditRoleTitle,
+            subtitle: AppStrings.panditRoleSubtitle,
+            onTap: () => _panditSelected(context),
+          ),
+          const SizedBox(height: 22),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.primarySoft,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.primaryBorder),
+            ),
+            child: const Column(
+              children: <Widget>[
+                _BenefitRow(
+                  icon: Icons.verified_user_rounded,
+                  title: AppStrings.benefitVerifiedTitle,
+                  subtitle: AppStrings.benefitVerifiedSubtitle,
+                ),
+                SizedBox(height: 14),
+                _BenefitRow(
+                  icon: Icons.event_available_rounded,
+                  title: AppStrings.benefitBookingTitle,
+                  subtitle: AppStrings.benefitBookingSubtitle,
+                ),
+                SizedBox(height: 14),
+                _BenefitRow(
+                  icon: Icons.support_agent_rounded,
+                  title: AppStrings.benefitSupportTitle,
+                  subtitle: AppStrings.benefitSupportSubtitle,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 28),
+          Row(
             children: <Widget>[
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: theme.textTheme.headlineMedium,
-                  children: <TextSpan>[
-                    const TextSpan(text: AppStrings.welcomeTitle),
-                    const TextSpan(
-                      text: 'Pandit',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                    TextSpan(
-                      text: 'India',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ],
+              const Expanded(child: Divider()),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  AppStrings.newToPanditIndia,
+                  style: theme.textTheme.bodySmall,
                 ),
               ),
-              const SizedBox(height: 10),
+              const Expanded(child: Divider()),
+            ],
+          ),
+          const SizedBox(height: 18),
+          PrimaryButton(
+            label: AppStrings.createCustomerAccount,
+            onPressed: () => context.go('/register'),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
               Text(
-                AppStrings.welcomeSubtitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(height: 1.55),
+                'Already have an account?',
+                style: theme.textTheme.bodySmall,
               ),
-              const SizedBox(height: 26),
-              _RoleCard(
-                selected: true,
-                icon: Icons.waving_hand_rounded,
-                iconColor: AppColors.primary,
-                iconBg: AppColors.primarySoft,
-                title: AppStrings.customerRoleTitle,
-                subtitle: AppStrings.customerRoleSubtitle,
-                onTap: () => context.go('/login'),
-              ),
-              const SizedBox(height: 14),
-              _RoleCard(
-                selected: false,
-                icon: Icons.self_improvement_rounded,
-                iconColor: AppColors.maroon,
-                iconBg: AppColors.surfaceMuted,
-                title: AppStrings.panditRoleTitle,
-                subtitle: AppStrings.panditRoleSubtitle,
-                onTap: () => _panditSelected(context),
-              ),
-              const SizedBox(height: 22),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primaryBorder),
-                ),
-                child: const Column(
-                  children: <Widget>[
-                    _BenefitRow(
-                      icon: Icons.verified_user_rounded,
-                      title: AppStrings.benefitVerifiedTitle,
-                      subtitle: AppStrings.benefitVerifiedSubtitle,
-                    ),
-                    SizedBox(height: 14),
-                    _BenefitRow(
-                      icon: Icons.event_available_rounded,
-                      title: AppStrings.benefitBookingTitle,
-                      subtitle: AppStrings.benefitBookingSubtitle,
-                    ),
-                    SizedBox(height: 14),
-                    _BenefitRow(
-                      icon: Icons.support_agent_rounded,
-                      title: AppStrings.benefitSupportTitle,
-                      subtitle: AppStrings.benefitSupportSubtitle,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28),
-              Row(
-                children: <Widget>[
-                  const Expanded(child: Divider()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      AppStrings.newToPanditIndia,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ),
-                  const Expanded(child: Divider()),
-                ],
-              ),
-              const SizedBox(height: 18),
-              PrimaryButton(
-                label: AppStrings.createCustomerAccount,
-                icon: Icons.person_add_alt_1_rounded,
-                onPressed: () => context.go('/register'),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'Already have an account?',
-                    style: theme.textTheme.bodySmall,
-                  ),
-                  TextButton(
-                    onPressed: () => context.go('/login'),
-                    child: const Text(AppStrings.signIn),
-                  ),
-                ],
+              TextButton(
+                onPressed: () => context.go('/login'),
+                child: const Text(AppStrings.signIn),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -172,7 +162,7 @@ class _RoleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return Material(
-      color: selected ? AppColors.surface : AppColors.surface,
+      color: selected ? AppColors.primarySoft : AppColors.surface,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
