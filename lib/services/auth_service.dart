@@ -1,113 +1,165 @@
-import '../core/config/app_config.dart';
-import '../models/api_error.dart';
-import '../models/auth_models.dart';
-import '../models/user_model.dart';
-import 'api_service.dart';
-import 'mock_auth_service.dart';
-import 'session_service.dart';
+import '../core/network/api_client.dart';
 
-/// Authentication boundary (PDF section 17 - keep integration behind
-/// service/repository layers).
-abstract class AuthService {
-  Future<AuthSession> login(LoginRequest request);
+class AuthResult {
+  AuthResult({required this.success, this.message, this.data});
 
-  Future<AuthSession> register(RegisterRequest request);
-
-  Future<OtpChallenge> forgotPassword(ForgotPasswordRequest request);
-
-  /// Returns the short lived reset token.
-  Future<String> verifyOtp(VerifyOtpRequest request);
-
-  Future<void> resetPassword(ResetPasswordRequest request);
-
-  Future<AuthSession> socialLogin(SocialLoginRequest request);
-
-  Future<UserModel> me();
-
-  Future<void> logout();
+  final bool success;
+  final String? message;
+  final Map<String, dynamic>? data;
 }
 
-/// Picks the implementation from `--dart-define=USE_MOCK_API`.
-class AuthServiceFactory {
-  AuthServiceFactory._();
-
-  static AuthService create() =>
-      AppConfig.useMockApi ? MockAuthService() : RemoteAuthService();
-
-  static AuthService instance = create();
-}
-
-/// Real HTTP implementation - active when `USE_MOCK_API=false`.
-class RemoteAuthService implements AuthService {
-  RemoteAuthService({ApiService? api, SessionService? session})
-      : _api = api ?? ApiService(),
-        _session = session ?? SessionService.instance;
-
-  final ApiService _api;
-  final SessionService _session;
-
-  Map<String, dynamic> _unwrap(dynamic body) {
-    if (body is Map<String, dynamic>) {
-      final dynamic data = body['data'];
-      if (data is Map<String, dynamic>) return data;
-      return body;
-    }
-    throw ApiException(
-      code: ApiException.codeGeneric,
-      message: 'Unexpected server response',
-    );
-  }
-
-  Future<AuthSession> _persist(dynamic body) async {
-    final AuthSession session = AuthSession.fromJson(_unwrap(body));
-    await _session.saveSession(session);
-    return session;
-  }
-
-  @override
-  Future<AuthSession> login(LoginRequest request) async =>
-      _persist(await _api.post('/auth/login', data: request.toJson()));
-
-  @override
-  Future<AuthSession> register(RegisterRequest request) async =>
-      _persist(await _api.post('/auth/register', data: request.toJson()));
-
-  @override
-  Future<OtpChallenge> forgotPassword(ForgotPasswordRequest request) async =>
-      OtpChallenge.fromJson(
-        _unwrap(await _api.post('/auth/forgot-password', data: request.toJson())),
-      );
-
-  @override
-  Future<String> verifyOtp(VerifyOtpRequest request) async {
-    final Map<String, dynamic> data =
-        _unwrap(await _api.post('/auth/verify-otp', data: request.toJson()));
-    return '${data['reset_token'] ?? ''}';
-  }
-
-  @override
-  Future<void> resetPassword(ResetPasswordRequest request) async {
-    await _api.post('/auth/reset-password', data: request.toJson());
-  }
-
-  @override
-  Future<AuthSession> socialLogin(SocialLoginRequest request) async =>
-      _persist(await _api.post('/auth/social-login', data: request.toJson()));
-
-  @override
-  Future<UserModel> me() async =>
-      UserModel.fromJson(_unwrap(await _api.get('/auth/me')));
-
-  @override
-  Future<void> logout() async {
-    final String? refresh = await _session.refreshToken();
+class AuthService {
+  /// Starts registration verification: `channel` is 'email' or 'phone'.
+  Future<AuthResult> sendRegistrationOtp({
+    required String identifier,
+    required String channel,
+  }) async {
     try {
-      await _api.post('/auth/logout', data: <String, dynamic>{
-        'refresh_token': refresh,
-      });
-    } on ApiException {
-      // Sign out must succeed locally even when the API call fails.
+      final res = await ApiClient.post(
+        '/register/send-otp',
+        body: {'identifier': identifier, 'channel': channel},
+        auth: false,
+      );
+      final body = res.body;
+      return AuthResult(
+        success: body['success'] == true,
+        message: body['message']?.toString(),
+        data: body,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
     }
-    await _session.clear();
+  }
+
+  /// Confirms the 6-digit code issued by [sendRegistrationOtp].
+  Future<AuthResult> verifyRegistrationOtp({
+    required String identifier,
+    required String channel,
+    required String otp,
+  }) async {
+    try {
+      final res = await ApiClient.post(
+        '/register/verify-otp',
+        body: {'identifier': identifier, 'channel': channel, 'otp': otp},
+        auth: false,
+      );
+      final body = res.body;
+      return AuthResult(
+        success: body['success'] == true,
+        message: body['message']?.toString(),
+        data: body,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> register(Map<String, dynamic> payload) async {
+    try {
+      final res = await ApiClient.post('/register', body: payload, auth: false);
+      final body = res.body;
+      return AuthResult(
+        success: body['success'] == true,
+        message: body['message']?.toString(),
+        data: body,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> login({
+    required String email,
+    required String password,
+    required String role,
+  }) async {
+    try {
+      final res = await ApiClient.post(
+        '/login',
+        body: {'email': email, 'password': password, 'role': role},
+        auth: false,
+      );
+      final body = res.body;
+      return AuthResult(
+        success: body['success'] == true,
+        message: body['message']?.toString(),
+        data: body,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> forgotPassword(String email) async {
+    try {
+      final res = await ApiClient.post(
+        '/forgot-password',
+        body: {'email': email},
+        auth: false,
+      );
+      final body = res.body;
+      return AuthResult(
+        success: body['success'] == true,
+        message: body['message']?.toString(),
+        data: body,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      final res = await ApiClient.post(
+        '/verify-otp',
+        body: {'email': email, 'otp': otp},
+        auth: false,
+      );
+      final body = res.body;
+      return AuthResult(
+        success: body['success'] == true,
+        message: body['message']?.toString(),
+        data: body,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<AuthResult> changePassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    try {
+      final res = await ApiClient.post(
+        '/change-password',
+        body: {'email': email, 'newPassword': newPassword},
+        auth: false,
+      );
+      final body = res.body;
+      return AuthResult(
+        success: body['success'] == true,
+        message: body['message']?.toString(),
+        data: body,
+      );
+    } on ApiException catch (e) {
+      return AuthResult(success: false, message: e.message);
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      await ApiClient.post('/logout');
+    } catch (_) {}
+  }
+
+  /// Single-session verification — web parity: `GET /session-check`
+  /// (AuthContext's 10-second heartbeat). Throws [ApiException] on 401 so
+  /// the caller can distinguish "signed out elsewhere" from network errors.
+  Future<void> sessionCheck() async {
+    await ApiClient.get('/session-check');
   }
 }
